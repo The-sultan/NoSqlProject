@@ -77,7 +77,7 @@ public class PackageTrackingServiceTest {
         
         PackageNode pn = new PackageNode("Maldonado", new Date("2014/3/3"), Boolean.TRUE);
         PackageInfo pi = new PackageInfo("IdPaquete03", "IdCliente03");        
-        pts.Add(pi, pn);
+        pts.Add(pi, pn); 
 
         List<PackageInfo> packages = pts.GetAllPackages();
         assertEquals(1, packages.size());

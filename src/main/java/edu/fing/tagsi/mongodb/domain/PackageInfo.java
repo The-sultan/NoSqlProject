@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class PackageInfo {   
         
-    @Id
+    @Id 
     private String idPaquete;
     private String idCliente;
     private List<PackageNode> nodes = new ArrayList<PackageNode>();

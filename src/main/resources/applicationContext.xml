@@ -22,7 +22,7 @@
     <neo4j:repositories base-package="edu.fing.tagsi.neo4j.repositories"/>
     <mvc:annotation-driven/>
     <tx:annotation-driven/>
-  
+   
     <mongo:mongo host="localhost" port="27017"/>
     <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
         <constructor-arg ref="mongo"/>

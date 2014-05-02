@@ -22,7 +22,7 @@ public class PackageNode {
         this.date = date;
         this.destination = destination;
     }
-
+ 
     public String getIdLugar() {
         return idLugar;
     }
