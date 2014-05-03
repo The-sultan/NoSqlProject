@@ -6,7 +6,6 @@
 package edu.fing.tagsi.mongodb.tests;
 
 import com.mongodb.DBCollection;
-import com.mongodb.WriteResult;
 import edu.fing.tagsi.mongodb.domain.*;
 import edu.fing.tagsi.mongodb.services.PackageTrackingService;
 import java.util.Date;
@@ -16,16 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.mongodb.MongoCollectionUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.index.Index;
-import static org.springframework.data.mongodb.core.query.Criteria.*;
-import org.springframework.data.mongodb.core.query.Order;
-import org.springframework.data.mongodb.core.query.Query;
-import static org.springframework.data.mongodb.core.query.Query.*;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -35,6 +26,9 @@ public class PackageTrackingServiceTest {
 
     @Autowired
     MongoOperations operations;
+    
+    @Autowired
+    PackageTrackingService pts;
 
     public String CollectionName = "packageCollection";
 
@@ -71,9 +65,6 @@ public class PackageTrackingServiceTest {
 
     @Test
     public void deberiaInsertarNuevoPaquete() {
-        
-        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("/applicationContext.xml");
-        PackageTrackingService pts = context.getBean(PackageTrackingService.class);
         
         PackageNode pn = new PackageNode("Maldonado", new Date("2014/3/3"), Boolean.TRUE);
         PackageInfo pi = new PackageInfo("IdPaquete03", "IdCliente03");        
