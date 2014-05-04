@@ -22,6 +22,9 @@ public class PackageInfo {
     private String idCliente;
     private List<PackageNode> nodes = new ArrayList<PackageNode>();
 
+    public PackageInfo() {
+    }
+    
     public PackageInfo(String idPaquete, String idCliente) {
         this.idPaquete = idPaquete;
         this.idCliente = idCliente;
@@ -39,7 +42,7 @@ public class PackageInfo {
         return nodes;
     }
     
-    public void insertNode(PackageNode pn)
+    public void addNode(PackageNode pn)
     {
         this.nodes.add(pn);
     }

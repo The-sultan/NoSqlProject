@@ -8,9 +8,13 @@ package edu.fing.tagsi.mongodb.rest;
 
 import edu.fing.tagsi.mongodb.rest.transfer.AddPackageRequest;
 import edu.fing.tagsi.mongodb.rest.transfer.GetAllPackageResponse;
+import edu.fing.tagsi.mongodb.rest.transfer.PackageDTO;
+import edu.fing.tagsi.mongodb.rest.transfer.PackageCollectionDTO;
 import edu.fing.tagsi.mongodb.services.PackageTrackingService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,5 +38,10 @@ public class PackageController {
     @RequestMapping(value = "/GetAllPackages", method = RequestMethod.POST)
     public @ResponseBody GetAllPackageResponse GetAllPackages(){
         return new GetAllPackageResponse(packageService.GetAllPackages());
+    }
+    
+    @RequestMapping(value = "/GetTracking/{idPaquete}", method = RequestMethod.GET)
+    public @ResponseBody List<PackageDTO> GetTracking(@PathVariable String idPaquete){
+        return new PackageCollectionDTO(packageService.GetTracking(idPaquete)).getPacks();
     }
 }

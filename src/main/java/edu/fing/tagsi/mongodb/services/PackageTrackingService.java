@@ -5,13 +5,10 @@
  */
 package edu.fing.tagsi.mongodb.services;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import edu.fing.tagsi.mongodb.domain.PackageInfo;
 import edu.fing.tagsi.mongodb.domain.PackageNode;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -35,15 +32,25 @@ public class PackageTrackingService {
                  
         if (pi != null && pn != null) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("idPaquete").is(pi.getIdPaquete()).and("idCliente").is(pi.getIdCliente()));
+            //_id = idPaquete
+            query.addCriteria(Criteria.where("_id").is(pi.getIdPaquete()).and("idCliente").is(pi.getIdCliente()));
             Update update = new Update();
-            //update.set("idCliente", pi.getIdCliente());        
-//            DBObject dbo = new BasicDBObject();
-//            mongoOperations.getConverter().write(pn, dbo);
             update.push("nodes", pn);
 
             mongoOperations.upsert(query, update, PackageInfo.class);
         }
+    }
+    
+    public PackageInfo GetTracking(String idPaquete)
+    {
+       Query query = new Query();
+       query.addCriteria(Criteria.where("_id").is(idPaquete));
+       
+       List<PackageInfo> packs = mongoOperations.find(query, PackageInfo.class);
+       if (packs.size() > 0)
+           return packs.get(0);
+       else 
+           return null;
     }
 
     public List<PackageInfo> GetAllPackages() {

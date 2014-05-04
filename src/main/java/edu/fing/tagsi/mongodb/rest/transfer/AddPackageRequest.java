@@ -17,19 +17,19 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class AddPackageRequest  implements Serializable{
-    private String idPaquete;
-    private String idCliente;
-    private String idLugar;
-    private Date date;
-    private Boolean destination;
-    
+    private String idpaquete;
+    private String idcliente;
+    private String idlugar;
+    private Date fecha;
+    private Boolean esdestino;
+         
     public PackageInfo getPackageInfo()
     {
-        return new PackageInfo(this.idPaquete, this.idCliente);
+        return new PackageInfo(this.idpaquete, this.idcliente);
     }
     
     public PackageNode getPackageNode()
     {
-        return new PackageNode(this.idLugar, this.date, this.destination);
+        return new PackageNode(this.idlugar, this.fecha, this.esdestino);
     }
 }

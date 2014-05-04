@@ -12,6 +12,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.MongoCollectionUtils;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -21,7 +23,7 @@ public class PackageTrackingServiceTest {
 
     @Autowired
     MongoOperations operations;
-    
+
     @Autowired
     PackageTrackingService pts;
 
@@ -60,94 +62,81 @@ public class PackageTrackingServiceTest {
 
     @Test
     public void deberiaInsertarNuevoPaquete() {
-        
-        PackageNode pn = new PackageNode("Maldonado", new Date("2014/3/3"), Boolean.TRUE);
-        PackageInfo pi = new PackageInfo("IdPaquete03", "IdCliente03");        
-        pts.Add(pi, pn); 
 
-        List<PackageInfo> packages = pts.GetAllPackages();
-        assertEquals(1, packages.size());
+        int before = operations.find(new Query(), PackageInfo.class).size();
+        PackageNode pn = new PackageNode("Maldonado", new Date("2014/3/3"), Boolean.TRUE);
+        PackageInfo pi = new PackageInfo("IdPaquete01", "IdCliente01");
+
+        pts.Add(pi, pn);
+
+        int after = operations.find(new Query(), PackageInfo.class).size();
+        assertEquals(before + 1, after);
+
+        operations.remove(pi);
     }
 
-    /* @Test
-     public void createAnIndex() {
-     String collectionName = MongoCollectionUtils.getPreferredCollectionName(Person.class);
-     if (!operations.getCollectionNames().contains(collectionName)) {
-     operations.createCollection(collectionName);
-     }
-     operations.ensureIndex(new Index().on("name", Order.ASCENDING), collectionName);
-     }
+    @Test
+    public void deberiaInsertarNuevoNodo() {
 
-     @Test
-     public void saveAndRetrieveDocuments() {
-     String collectionName = operations.getCollectionName(PackageInfo.class);
+        PackageInfo pi = new PackageInfo("IdPaquete02", "IdCliente02");
+        PackageNode pnode = new PackageNode("Maldonado", new Date("2014/3/3"), Boolean.FALSE);
+        pi.addNode(pnode);
+        operations.save(pi);
+        Query q = new Query().addCriteria(Criteria.where("_id").is(pi.getIdPaquete()).and("idCliente").is(pi.getIdCliente()));
 
-     PackageInfo p = new PackageInfo("IdPaquete01", "IdCliente01");
-     operations.insert(p);
+        int beforeNodes = operations.find(q, PackageInfo.class).get(0).getNodes().size();
+        int before = operations.find(new Query(), PackageInfo.class).size();
 
-     assertEquals(1, operations.getCollection(collectionName).count());
+        PackageInfo pi0 = new PackageInfo("IdPaquete02", "IdCliente02");
+        PackageNode pnode0 = new PackageNode("Artigas", new Date("2014/5/5"), Boolean.TRUE);
+        pts.Add(pi0, pnode0);
+        List<PackageNode> packs = operations.find(q, PackageInfo.class).get(0).getNodes();
 
-     Person qp = operations.findOne(query(where("id").is(p.getId())), Person.class);
+        int afterNodes = packs.size();
+        int after = operations.find(new Query(), PackageInfo.class).size();
 
-     assertNotNull(qp);
-     assertEquals(p.getName(), qp.getName());
-     }
+        //No se agrega paquete, se actualiza el que ya estaba
+        assertEquals(before, after);
+        //Check nodos
+        assertEquals(before, after);
+        assertEquals(new Date("2014/3/3"), packs.get(0).getDate());
+        assertEquals(new Date("2014/5/5"), packs.get(1).getDate());
+        assertEquals("Maldonado", packs.get(0).getIdLugar());
+        assertEquals("Artigas", packs.get(1).getIdLugar());
+        assertFalse(packs.get(0).isDestination());
+        assertTrue(packs.get(1).isDestination());
 
-     @Test
-     public void queryingForDocuments() {
-     String collectionName = MongoCollectionUtils.getPreferredCollectionName(Person.class);
+        operations.remove(pi);
+    }
 
-     Person p1 = new Person("Bob", 33);
-     p1.addAccount(new Account("198-998-2188", Account.Type.SAVINGS, 123.55d));
-     operations.insert(p1);
-     Person p2 = new Person("Mary", 25);
-     p2.addAccount(new Account("860-98107-681", Account.Type.CHECKING, 400.51d));
-     operations.insert(p2);
-     Person p3 = new Person("Chris", 68);
-     p3.addAccount(new Account("761-002-8901", Account.Type.SAVINGS, 10531.00d));
-     operations.insert(p3);
-     Person p4 = new Person("Janet", 33);
-     p4.addAccount(new Account("719-100-0019", Account.Type.SAVINGS, 1209.10d));
-     operations.insert(p4);
+    @Test
+    public void deberiaObtenerTracking() {
 
-     assertEquals(4, operations.getCollection(collectionName).count());
+        PackageInfo pi = new PackageInfo("IdPaqueteTracking", "IdClienteTracking");
+        PackageNode pn = new PackageNode("Montevideo", new Date("2014/1/1"), Boolean.FALSE);
+        pi.addNode(pn);
+        pn = new PackageNode("SanJose", new Date("2014/1/2"), Boolean.FALSE);
+        pi.addNode(pn);
+        pn = new PackageNode("Flores", new Date("2014/1/3"), Boolean.FALSE);
+        pi.addNode(pn);
+        pn = new PackageNode("Paysandu", new Date("2014/1/4"), Boolean.FALSE);
+        pi.addNode(pn);
+        pn = new PackageNode("Salto", new Date("2014/1/5"), Boolean.TRUE);
+        pi.addNode(pn);
+        operations.save(pi);
 
-     List<Person> result = operations.find(
-     new Query(where("age").lt(50).and("accounts.balance").gt(1000.00d)),
-     Person.class);
+        List<PackageNode> packNodes = pts.GetTracking(pi.getIdPaquete()).getNodes();
 
-     System.out.println(result);
-     assertNotNull(result);
-     assertEquals(1, result.size());
-     }
-    
-     @Test
-     public void updatingDocuments() {
-     String collectionName = operations.getCollectionName(Person.class);
+        //Check number of nodes
+        assertEquals(5, packNodes.size());
+        //Check 1st idLugar
+        assertEquals("Montevideo", packNodes.get(0).getIdLugar());
+        //Check 2nd Date
+        assertEquals(new Date("2014/1/2"), packNodes.get(1).getDate());
+        //Check 4th and 5th destination property
+        assertFalse(packNodes.get(3).isDestination());
+        assertTrue(packNodes.get(4).isDestination());
 
-     Person p1 = new Person("Bob", 33);
-     p1.addAccount(new Account("198-998-2188", Account.Type.SAVINGS, 123.55d));
-     operations.insert(p1);
-     Person p2 = new Person("Mary", 25);
-     p2.addAccount(new Account("860-98107-681", Account.Type.CHECKING, 400.51d));
-     operations.insert(p2);
-     Person p3 = new Person("Chris", 68);
-     p3.addAccount(new Account("761-002-8901", Account.Type.SAVINGS, 10531.00d));
-     operations.insert(p3);
-     Person p4 = new Person("Janet", 33);
-     p4.addAccount(new Account("719-100-0019", Account.Type.SAVINGS, 1209.10d));
-     operations.insert(p4);
-
-     assertEquals(4, operations.getCollection(collectionName).count());
-
-     WriteResult wr = operations.updateMulti(
-     query(where("accounts.accountType").is(Account.Type.SAVINGS.name())),
-     new Update().inc("accounts.$.balance", 50.00),
-     Person.class);
-
-     assertNotNull(wr);
-     assertEquals(3, wr.getN());
-     }
-     */
-
+        operations.remove(pi);
+    }
 }
