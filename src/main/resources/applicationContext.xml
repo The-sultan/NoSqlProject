@@ -15,18 +15,20 @@
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
                 http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.4.xsd">
 
-  <context:spring-configured/>
-  <context:annotation-config/>
-  <context:component-scan base-package="edu.fing.tagsi"/>
-  <neo4j:config storeDirectory="target/neo4j-db-plain" base-package="edu.fing.tagsi.neo4j.domain"/>
-  <neo4j:repositories base-package="edu.fing.tagsi.neo4j.repositories"/>
-  <mvc:annotation-driven/>
-  <tx:annotation-driven/>
+    <context:spring-configured/>
+    <context:annotation-config/>
+    <context:component-scan base-package="edu.fing.tagsi"/>
+    <neo4j:config storeDirectory="target/neo4j-db-plain" base-package="edu.fing.tagsi.neo4j.domain"/>
+    <neo4j:repositories base-package="edu.fing.tagsi.neo4j.repositories"/>
+    <mvc:annotation-driven/>
+    <tx:annotation-driven/>
+   
+    <mongo:mongo host="localhost" port="27017"/>
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg ref="mongo"/>
+        <constructor-arg name="databaseName" value="tracking"/>
+        <!--<constructor-arg name="defaultCollectionName" value="packageCollection"/>-->
+    </bean>  
   
-  <mongo:mongo host="localhost" port="27017"/>
-  <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
-    <constructor-arg ref="mongo"/>
-    <constructor-arg name="databaseName" value="test"/>
-  </bean>
   
 </beans>
