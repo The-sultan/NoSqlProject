@@ -4,6 +4,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:neo4j="http://www.springframework.org/schema/data/neo4j"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
        xsi:schemaLocation="
        	http://www.springframework.org/schema/beans 
        	http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -12,7 +13,9 @@
 		http://www.springframework.org/schema/data/neo4j
 		http://www.springframework.org/schema/data/neo4j/spring-neo4j.xsd
 		http://www.springframework.org/schema/tx
-		http://www.springframework.org/schema/tx/spring-tx.xsd">
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+                http://www.springframework.org/schema/data/mongo 
+                http://www.springframework.org/schema/data/mongo/spring-mongo-1.4.xsd">
 
     <context:spring-configured/>
     <context:annotation-config/>
@@ -21,6 +24,12 @@
     <neo4j:config storeDirectory="target/neo4j-db-plain"
                   base-package="edu.fing.tagsi.neo4j.domain"/>
     <neo4j:repositories base-package="edu.fing.tagsi.neo4j.repositories"/>
+  
+    <mongo:mongo host="localhost" port="27017"/>
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg ref="mongo"/>
+        <constructor-arg name="databaseName" value="test"/>
+    </bean>
 
     <tx:annotation-driven />
 </beans>
