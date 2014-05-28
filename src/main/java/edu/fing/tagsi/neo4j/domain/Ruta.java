@@ -48,26 +48,45 @@ public class Ruta {
 
   @Override
   public int hashCode() {
-    return (id == null) ? 0 : id.hashCode();
+    int hash = 5;
+    hash = 89 * hash + (this.id != null ? this.id.hashCode() : 0);
+    hash = 89 * hash + (this.ciudadOrigen != null ? this.ciudadOrigen.hashCode() : 0);
+    hash = 89 * hash + (this.ciudadDestino != null ? this.ciudadDestino.hashCode() : 0);
+    hash = 89 * hash + (int) (Double.doubleToLongBits(this.distancia) ^ (Double.doubleToLongBits(this.distancia) >>> 32));
+    hash = 89 * hash + (this.rutas != null ? this.rutas.hashCode() : 0);
+    return hash;
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
     if (obj == null) {
       return false;
     }
     if (getClass() != obj.getClass()) {
       return false;
     }
-    Ruta other = (Ruta) obj;
-    if (id == null) {
-      return other.id == null;
+    final Ruta other = (Ruta) obj;
+    if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+      return false;
     }
-    return id.equals(other.id);
+    if (this.ciudadOrigen != other.ciudadOrigen && (this.ciudadOrigen == null || !this.ciudadOrigen.equals(other.ciudadOrigen))) {
+      return false;
+    }
+    if (this.ciudadDestino != other.ciudadDestino && (this.ciudadDestino == null || !this.ciudadDestino.equals(other.ciudadDestino))) {
+      return false;
+    }
+    if (Double.doubleToLongBits(this.distancia) != Double.doubleToLongBits(other.distancia)) {
+      return false;
+    }
+    if (this.rutas != other.rutas && (this.rutas == null || !this.rutas.equals(other.rutas))) {
+      return false;
+    }
+    return true;
   }
+
+  
+
+ 
 
   @Override
   public String toString() {
